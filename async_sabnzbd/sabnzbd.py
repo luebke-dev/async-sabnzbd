@@ -54,7 +54,15 @@ class Sabnzbd:
         nzo_ids: str | None = None,
     ):
         data = await self._request(
-            sabnzbd_method="queue", params={"start": start, "limit": limit, "category": category, "priority": priority, "search": search, "nzo_ids": nzo_ids}
+            sabnzbd_method="queue",
+            params={
+                "start": start,
+                "limit": limit,
+                "category": category,
+                "priority": priority,
+                "search": search,
+                "nzo_ids": nzo_ids,
+            },
         )
         return data["queue"]["slots"]
 
@@ -66,20 +74,83 @@ class Sabnzbd:
         data = await self._request(sabnzbd_method="server_stats")
         return data
 
-    async def resume(self):
+    async def delete_job(self, nzo_id: str | list[str]):
+        data = await self._request(
+            sabnzbd_method="queue",
+            params={
+                "name": "delete",
+                "value": nzo_id if type(nzo_id) == str else ",".join(nzo_id),
+            },
+        )
+        return data["status"]
+
+    async def pause_job(self, nzo_id: str):
+        data = await self._request(
+            sabnzbd_method="queue", params={"name": "pause", "value": nzo_id}
+        )
+        return data
+
+    async def purge_queue(
+        self, search: str | None = None, delete_files: bool | None = None
+    ):
+        data = await self._request(
+            sabnzbd_method="queue", params={"search": search, "del_files": delete_files}
+        )
+        return data
+
+    async def resume_job(self, nzo_id: str):
+        data = await self._request(
+            sabnzbd_method="queue", params={"name": "resume", "value": nzo_id}
+        )
+        return data
+
+    async def resume_queue(self):
         data = await self._request(sabnzbd_method="resume")
         return data["status"]
 
-    async def pause(self):
+    async def pause_queue(self):
         data = await self._request(sabnzbd_method="pause")
         return data["status"]
 
-    async def change_job(
+    async def change_job_name(
         self, nzo_id: str, new_name: str | None = None, new_password: str | None = None
     ):
         data = await self._request(
             sabnzbd_method="queue",
-            params={"value": nzo_id, "value2": new_name, "value3": new_password},
+            params={
+                "name": "rename",
+                "value": nzo_id,
+                "value2": new_name,
+                "value3": new_password,
+            },
+        )
+
+        return data
+
+    async def change_job_priority(self, nzo_id: str, priority: int):
+        data = await self._request(
+            sabnzbd_method="queue",
+            params={
+                "name": "priority",
+                "value": nzo_id,
+                "value2": priority,
+            },
+        )
+
+        return data
+
+    async def change_job_post_processing_options(self, nzo_id: str, options: int):
+        data = await self._request(
+            sabnzbd_method="change_opts",
+            params={"value": nzo_id, "value2": options},
+        )
+
+        return data
+
+    async def change_job_category(self, nzo_id: str, category: str):
+        data = await self._request(
+            sabnzbd_method="change_cat",
+            params={"value": nzo_id, "value2": category},
         )
 
         return data
@@ -107,4 +178,34 @@ class Sabnzbd:
             },
         )
 
+        return data
+    
+    async def version(self):
+        data = await self._request(
+            sabnzbd_method="version"
+        )
+        return data
+    
+    async def restart(self):
+        data = await self._request(
+            sabnzbd_method="restart"
+        )
+        return data    
+    
+    async def shutdown(self):
+        data = await self._request(
+            sabnzbd_method="shutdown"
+        )
+        return data
+
+    async def get_categories(self):
+        data = await self._request(
+            sabnzbd_method="get_cats"
+        )
+        return data
+    
+    async def get_scripts(self):
+        data = await self._request(
+            sabnzbd_method="get_scripts"
+        )
         return data
