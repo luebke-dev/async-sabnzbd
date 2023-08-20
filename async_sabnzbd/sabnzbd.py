@@ -79,7 +79,7 @@ class Sabnzbd:
             sabnzbd_method="queue",
             params={
                 "name": "delete",
-                "value": nzo_id if type(nzo_id) == str else ",".join(nzo_id),
+                "value": nzo_id if isinstance(nzo_id, str) else ",".join(nzo_id),
             },
         )
         return data["status"]
@@ -179,33 +179,23 @@ class Sabnzbd:
         )
 
         return data
-    
+
     async def version(self):
-        data = await self._request(
-            sabnzbd_method="version"
-        )
+        data = await self._request(sabnzbd_method="version")
         return data
-    
+
     async def restart(self):
-        data = await self._request(
-            sabnzbd_method="restart"
-        )
-        return data    
-    
+        data = await self._request(sabnzbd_method="restart")
+        return data
+
     async def shutdown(self):
-        data = await self._request(
-            sabnzbd_method="shutdown"
-        )
+        data = await self._request(sabnzbd_method="shutdown")
         return data
 
     async def get_categories(self):
-        data = await self._request(
-            sabnzbd_method="get_cats"
-        )
+        data = await self._request(sabnzbd_method="get_cats")
         return data
-    
+
     async def get_scripts(self):
-        data = await self._request(
-            sabnzbd_method="get_scripts"
-        )
+        data = await self._request(sabnzbd_method="get_scripts")
         return data
