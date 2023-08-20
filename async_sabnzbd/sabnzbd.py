@@ -108,6 +108,3 @@ class Sabnzbd:
         )
 
         return data
-
-    async def test(self):
-        pass
